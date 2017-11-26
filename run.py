@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 from aiohttp import web
 import json
-from settings import TOKEN, CHAT_ID
+from settings import TOKEN, CHAT_ID, PORT
 
 API_URL = 'https://api.telegram.org/bot%s/sendMessage' % TOKEN
 
