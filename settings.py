@@ -22,7 +22,7 @@ import os
 
 TOKEN = os.environ["TOKEN"]
 CHAT_ID = os.environ["CHAT_ID"]
-PORT = os.environ['PORT']
+PORT = int(os.environ['PORT'])
 
 str_command = 'heroku info -s | grep web_url | cut -d= -f2'
 HEROKU_URL = os.system(str_command)
