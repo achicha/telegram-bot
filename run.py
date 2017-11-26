@@ -10,7 +10,11 @@ API_URL = 'https://api.telegram.org/bot%s/sendMessage' % TOKEN
 
 
 async def handler(request):
-    data = await request.json()
+    try:
+        data = await request.json()
+    except:
+        print('data should be in JSON format')
+
     headers = {
         'Content-Type': 'application/json'
     }
@@ -18,6 +22,7 @@ async def handler(request):
         'chat_id': CHAT_ID,     # post messages to the public channel
         'text': data['message']['text']
     }
+
     try:
         async with aiohttp.ClientSession(loop=loop) as session:
             async with session.post(API_URL,
