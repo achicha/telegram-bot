@@ -48,7 +48,6 @@ if __name__ == '__main__':
         app = loop.run_until_complete(init_app(loop))
         web.run_app(app, host='0.0.0.0', port=PORT)
     except Exception as e:
-        print(type(PORT), PORT)
         print('Error create server: %r' % e)
         print(traceback.format_exc())
     finally:
