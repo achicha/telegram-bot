@@ -9,6 +9,7 @@ name = "pypi"
 
 aiohttp = "*"
 requests = "*"
+envparse = "*"
 
 
 [dev-packages]

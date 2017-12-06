@@ -19,10 +19,17 @@ register our bot in telegram:
 """
 
 import os
+import sys
+from envparse import env
 
-TOKEN = os.environ["TOKEN"]
-CHAT_ID = os.environ["CHAT_ID"]
-PORT = int(os.environ['PORT'])
+path = os.path.abspath(os.path.dirname(sys.argv[0]))
+
+if os.path.isfile(os.path.join(path, '.env')):
+    env.read_envfile(os.path.join(path, '.env'))
+
+TOKEN = env.str('TOKEN')
+CHAT_ID = env.str('CHAT_ID')
+PORT = int(env.str('PORT'))
 
 str_command = 'heroku info -s | grep web_url | cut -d= -f2'
 HEROKU_URL = os.system(str_command)
