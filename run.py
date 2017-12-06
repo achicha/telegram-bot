@@ -14,6 +14,7 @@ async def handler(request):
         data = await request.json()
     except:
         print('data should be in JSON format')
+        return web.Response(status=500)
 
     headers = {
         'Content-Type': 'application/json'
