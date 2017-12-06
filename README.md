@@ -6,7 +6,7 @@ HOWTO:
     - `cd telegram-bot`
     - `pip install` [pipenv](https://github.com/kennethreitz/pipenv)
 4. Install all dependencies:
-    - `pipenv install` or `pip install -r Procfile`
+    - `pipenv install` or `pip install -r Pipfile`
 5. Try local [heroku](https://devcenter.heroku.com/articles/deploying-python)
     - install: `wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh`
     - create entry point. Procfile: `parser: python run.py`
@@ -15,8 +15,10 @@ HOWTO:
     - create .env file and add there config vars from `settings.py`
     - run local heroku: `heroku local parser`
 6. deploy to remote heroku:
-    - add heroku remote branch
-    - `git push heroku master`
+    - add heroku remote branch: `heroku git:remote -a MyHerokuAppName`
+    - deploy: `git push heroku master`
+    - check logs: `heroku logs -n 10`
+    - restart app if needed: `heroku restart MyHerokuAppName`
     
 
 
