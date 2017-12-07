@@ -3,7 +3,7 @@ import traceback
 import asyncio
 import aiohttp
 from aiohttp import web
-from settings import TOKEN, CHAT_ID, PORT
+from settings import TOKEN, CHAT_ID, PORT, CHAT_WHITE_LIST, GROUP_WHITE_LIST
 
 
 class Api(object):
@@ -64,12 +64,35 @@ class ChannelConversation(Api):
         await self.sendMessage(_id, message['text'])
 
 
+@web.middleware
+async def middleware_handler(request, handler):
+    data = await request.json()
+
+    # skip internal bot command
+    try:
+        if data['message']['entities'][0]['type'] == 'bot_command':
+            print('skip bot_command ', data)
+            return web.Response(status=200)
+    except:
+        pass
+    # skip not my messages
+    if data['message']['from']['id'] not in (CHAT_WHITE_LIST + GROUP_WHITE_LIST):
+        print('chat_id NOT in white list ', data)
+        return web.Response(status=200)
+    # skip bot requests
+    if data['message']['from']['is_bot'] == True:
+        print('skip bots ', data)
+        return web.Response(status=200)
+
+    return await handler(request)  # should return response instance
+
+
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     channel_bot = ChannelConversation(TOKEN, loop, CHAT_ID)
 
     try:
-        app = web.Application(loop=loop, middlewares=[])
+        app = web.Application(loop=loop, middlewares=[middleware_handler])
         app.router.add_post('/api/v1', channel_bot.handler)
         web.run_app(app, host='0.0.0.0', port=PORT)
     except:

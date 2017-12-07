@@ -30,6 +30,8 @@ if os.path.isfile(os.path.join(path, '.env')):
 TOKEN = env.str('TOKEN')
 CHAT_ID = env.str('CHAT_ID')
 PORT = int(env.str('PORT'))
+CHAT_WHITE_LIST = [int(i) for i in env.str('CHAT_WHITE_LIST').split(',')]
+GROUP_WHITE_LIST = env.str('GROUP_WHITE_LIST').split(',')
 
 str_command = 'heroku info -s | grep web_url | cut -d= -f2'
 HEROKU_URL = os.system(str_command)
