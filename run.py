@@ -75,29 +75,31 @@ async def middleware_handler(request, handler):
         print('data should be in JSON format')
         return web.Response(status=500)
 
-    # SKIP foreigners
     try:
         # only messages from WHITE LIST can be passed
         if data['message']['from']['id'] in (CHAT_WHITE_LIST + GROUP_WHITE_LIST):
-            print('id from white list', data)
-            return web.Response(status=200)
+            if data['message']['entities'][0]['type'] == 'bot_command':
+                print('internal bot command', data)
+            else:
+                return await handler(request)  # should return response instance
 
+        # SKIP FOREIGNERS
         else:
-            # skip internal bot command
+            # internal bot command
             if data['message']['entities'][0]['type'] == 'bot_command':
                 print('skip bot_command ', data)
                 return web.Response(status=200)
-            # skip bot requests
+            # bot requests
             elif data['message']['from']['is_bot'] == True:
                 print('skip bots ', data)
                 return web.Response(status=200)
             # another case
             else:
                 return web.Response(status=200)
-    except Exception:
-        print(data)
 
-    return await handler(request)  # should return response instance
+    except Exception:
+        print('request without chat_id', data)
+        return web.Response(status=500)
 
 
 if __name__ == '__main__':
