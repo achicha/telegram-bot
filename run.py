@@ -1,7 +1,7 @@
 import json
 import traceback
 import asyncio
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 import aiohttp
 from aiohttp import web
 from settings import TOKEN, CHAT_ID, PORT, CHAT_WHITE_LIST, GROUP_WHITE_LIST
@@ -30,9 +30,29 @@ class Api(object):
 
     @abstractmethod
     async def _handler(self, message):
+        """
+            message transferring, add chat_id field
+        :param message: dictionary message
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    async def send_message(self, chat_id, text):
+        """
+            create message dictionary and send it
+        :param chat_id: ChatId of telegram user/channel
+        :param text: JSON message
+        :return:
+        """
         pass
 
     async def handler(self, request):
+        """
+            Use this handler with routing
+        :param request:
+        :return:
+        """
         try:
             message = await request.json()
         except:
@@ -42,19 +62,6 @@ class Api(object):
         asyncio.ensure_future(self._handler(message['message']))
         return aiohttp.web.Response(status=200)
 
-    async def sendMessage(self, chat_id, text):
-        """
-
-        :param chat_id: ChatId of telegram user/channel
-        :param text: JSON message
-        :return:
-        """
-        message = {
-            'chat_id': chat_id,
-            'text': text
-        }
-        await self._request('sendMessage', message)
-
 
 class ChannelConversation(Api):
     def __init__(self, token, loop, chat_id=None):
@@ -63,7 +70,15 @@ class ChannelConversation(Api):
 
     async def _handler(self, message):
         _id = self._chat_id or message['chat']['id']
-        await self.sendMessage(_id, message['text'])
+        await self.send_message(_id, message['text'])
+
+    async def send_message(self, chat_id, text):
+
+        message = {
+            'chat_id': chat_id,
+            'text': text
+        }
+        await self._request('sendMessage', message)
 
 
 @web.middleware
