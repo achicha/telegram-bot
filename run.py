@@ -31,18 +31,11 @@ class Api(object):
     @abstractmethod
     async def _handler(self, message):
         """
-            message transferring, add chat_id field
-        :param message: dictionary message
-        :return:
-        """
-        pass
+        message transferring:
+            1. find recipient (chat_id)
+            2. create message for delivery
 
-    @abstractmethod
-    async def send_message(self, chat_id, text):
-        """
-            create message dictionary and send it
-        :param chat_id: ChatId of telegram user/channel
-        :param text: JSON message
+        :param message: dictionary message
         :return:
         """
         pass
@@ -70,13 +63,9 @@ class ChannelConversation(Api):
 
     async def _handler(self, message):
         _id = self._chat_id or message['chat']['id']
-        await self.send_message(_id, message['text'])
-
-    async def send_message(self, chat_id, text):
-
         message = {
-            'chat_id': chat_id,
-            'text': text
+            'chat_id': _id,
+            'text': message['text']
         }
         await self._request('sendMessage', message)
 
