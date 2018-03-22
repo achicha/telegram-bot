@@ -22,6 +22,13 @@ HowTo:
     - check logs: `heroku logs -n 10`
     - restart app if needed: `heroku restart MyHerokuAppName`
     
+todo:
+- add telegram bot links
+- resend errors 
+- block wrong messages like /start or others
+- several api links
+- store all requests to local heroku DB
+
 
 Links:
 
