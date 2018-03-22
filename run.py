@@ -1,6 +1,7 @@
 import json
 import traceback
 import asyncio
+from abc import ABCMeta, abstractmethod
 import aiohttp
 from aiohttp import web
 from settings import TOKEN, CHAT_ID, PORT, CHAT_WHITE_LIST, GROUP_WHITE_LIST
@@ -27,6 +28,7 @@ class Api(object):
                     print(traceback.format_exc())
                     return web.Response(status=500)
 
+    @abstractmethod
     async def _handler(self, message):
         pass
 
@@ -66,24 +68,34 @@ class ChannelConversation(Api):
 
 @web.middleware
 async def middleware_handler(request, handler):
-    data = await request.json()
-
-    print(data)
-    # skip internal bot command
+    # try to convert to json
     try:
-        if data['message']['entities'][0]['type'] == 'bot_command':
-            print('skip bot_command ', data)
-            return web.Response(status=200)
-        # skip not my messages
-        if data['message']['from']['id'] not in (CHAT_WHITE_LIST + GROUP_WHITE_LIST):
-            print('chat_id NOT in white list ', data)
-            return web.Response(status=200)
-        # skip bot requests
-        if data['message']['from']['is_bot'] == True:
-            print('skip bots ', data)
-            return web.Response(status=200)
+        data = await request.json()
     except Exception:
-        pass
+        print('data should be in JSON format')
+        return web.Response(status=500)
+
+    # SKIP foreigners
+    try:
+        # only messages from WHITE LIST can be passed
+        if data['message']['from']['id'] in (CHAT_WHITE_LIST + GROUP_WHITE_LIST):
+            print('id from white list', data)
+            return web.Response(status=200)
+
+        else:
+            # skip internal bot command
+            if data['message']['entities'][0]['type'] == 'bot_command':
+                print('skip bot_command ', data)
+                return web.Response(status=200)
+            # skip bot requests
+            elif data['message']['from']['is_bot'] == True:
+                print('skip bots ', data)
+                return web.Response(status=200)
+            # another case
+            else:
+                return web.Response(status=200)
+    except Exception:
+        print(data)
 
     return await handler(request)  # should return response instance
 
