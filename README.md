@@ -9,7 +9,7 @@ HowTo:
 4. Install all dependencies:
     - `pipenv install` or `pip install -r Pipfile`
 5. Try local [heroku](https://devcenter.heroku.com/articles/deploying-python)
-    - install: `wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh`
+    - install [Heroku CLI](https://devcenter.heroku.com/articles/getting-started-with-python#set-up): `wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh`
     - create entry point. `touch Procfile` with `web: python run.py` inside it.
     - login: `heroku login`
     - create app: `heroku create`

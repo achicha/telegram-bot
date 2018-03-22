@@ -68,21 +68,22 @@ class ChannelConversation(Api):
 async def middleware_handler(request, handler):
     data = await request.json()
 
+    print(data)
     # skip internal bot command
     try:
         if data['message']['entities'][0]['type'] == 'bot_command':
             print('skip bot_command ', data)
             return web.Response(status=200)
-    except:
+        # skip not my messages
+        if data['message']['from']['id'] not in (CHAT_WHITE_LIST + GROUP_WHITE_LIST):
+            print('chat_id NOT in white list ', data)
+            return web.Response(status=200)
+        # skip bot requests
+        if data['message']['from']['is_bot'] == True:
+            print('skip bots ', data)
+            return web.Response(status=200)
+    except Exception:
         pass
-    # skip not my messages
-    if data['message']['from']['id'] not in (CHAT_WHITE_LIST + GROUP_WHITE_LIST):
-        print('chat_id NOT in white list ', data)
-        return web.Response(status=200)
-    # skip bot requests
-    if data['message']['from']['is_bot'] == True:
-        print('skip bots ', data)
-        return web.Response(status=200)
 
     return await handler(request)  # should return response instance
 
